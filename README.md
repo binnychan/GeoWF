@@ -47,4 +47,4 @@ The following command could be used as a scheduled task to periodically update G
 
 ## Binny Customization
 - Changed the script to be a function
-- Added ExtraIP.TXT for extra IP address allowed on the list (e.g. Tailscaler / IPv6)
+- Added ExtraNetworks.TXT for extra network(s) address(es) allowed on the list (e.g. Tailscaler / IPv6)
