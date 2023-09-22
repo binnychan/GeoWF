@@ -44,3 +44,7 @@ The following command could be used as a scheduled task to periodically update G
 * Windows Firewall limits IP ranges to 10,000 per rule. I wish I knew this before creating this script. I may add a workaround (such as splitting rules) in the future.
 * `-RuleName` is not to be confused with `-RuleDisplayName`. The former is either a shorthand name or GUID and the latter is how rule names appear in `wf.msc`.
 * Multiple rules can share the same display name.
+
+## Binny Customization
+- Changed the script to be a function
+- Added ExtraIP.TXT for extra IP address allowed on the list (e.g. Tailscaler / IPv6)
