@@ -80,6 +80,28 @@ function GeoWF {
     $GeoIPURL = ($GEOIP_URL_TEMPLATE -f $MaxMindLicenseKey)
     $GeoIPDir = Join-Path $APP_DIR "GeoIP"
     $GeoIPZip = Join-Path $APP_DIR "GeoIP.zip"
+    $GeoIPLastModifiedPath = Join-Path $APP_DIR "GeoIP\LastModified.txt"
+    $GeoIPLastCountryPath = Join-Path $APP_DIR "GeoIP\LastCountry.txt"
+
+    $lastModifiedDate = $(Invoke-WebRequest -Method HEAD -Uri $GeoIPURL -UseBasicParsing).Headers.'Last-Modified'
+
+    # Check last-modified if unmatch, forcing download
+    if (Test-Path $GeoIPLastModifiedPath) {
+      Write-Information "Checking any GeoIP update..."
+      if ((Get-Content $GeoIPLastModifiedPath) -ne $lastModifiedDate) {
+          Write-Information "Found update, forcing download"
+          $ForceDownload = $true   
+      } else {
+        Write-Information "No update found, using cache data..."
+        #Check last-country if match, exit
+        if (Test-Path $GeoIPLastCountryPath) {
+            if ((Get-Content $GeoIPLastCountryPath) -eq $Country) {
+                Write-Information "No change on country, exiting"
+                return
+            }
+        }
+      }
+    }
 
     # Delete GeoIP directory if forcing download
     if ($ForceDownload -and (Test-Path $GeoIPDir)) {
@@ -96,6 +118,8 @@ function GeoWF {
       [System.IO.Compression.ZipFile]::ExtractToDirectory($GeoIPZip, $APP_DIR)
       Rename-Item -Path (Get-Item -Path (Join-Path $APP_DIR "GeoLite2-Country-CSV_*") | Sort-Object "Name" -Descending)[0] -NewName "GeoIP"
       Remove-Item $GeoIPZip -Force -Confirm:$false
+      # write Last Modified Date to file for auto-download
+      $lastModifiedDate > $GeoIPLastModifiedPath      
     }
 
     # Ensure at least one rule criteria is specified if in rule update mode
@@ -160,6 +184,8 @@ function GeoWF {
       Write-Host "Modifying these rules with $($Networks.Count) networks:"
       $TargetRules | Select-Object Direction, DisplayName, DisplayGroup, Profile
       Set-NetFirewallRule -Name $TargetRules.Name -RemoteAddress $Networks
+      # write the Last Country to file to skip the update process
+      $lastModifiedDate > $GeoIPLastModifiedPath
     } else {
       Write-Warning "No firewall rules matched criteria. No rules have been modified."
     }
