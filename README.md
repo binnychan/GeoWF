@@ -46,5 +46,7 @@ The following command could be used as a scheduled task to periodically update G
 * Multiple rules can share the same display name.
 
 ## Binny Customization
-- Changed the script to be a function
-- Added ExtraNetworks.TXT for extra network(s) address(es) allowed on the list (e.g. Tailscaler / IPv6)
+- Changed the script to be a function.
+- Added ExtraNetworks.TXT for extra network(s) address(es) allowed on the list (e.g. Tailscaler / IPv6).
+- Added detection of the last modified date of the GeoWF file. Force download if found different.
+- Added detection of the last country, if no update of GeoWF and the same country code, the process will exit.
