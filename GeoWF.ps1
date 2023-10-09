@@ -90,7 +90,7 @@ function GeoWF {
     $lastModifiedDate = $(Invoke-WebRequest -Method HEAD -Uri $GeoIPURL -UseBasicParsing).Headers.'Last-Modified'
 
     # Check last-modified if unmatch, forcing download
-    if (Test-Path $GeoIPLastModifiedPath) {
+    if (!($ForceDownload) -and (Test-Path $GeoIPLastModifiedPath)) {
       Write-Information "Checking any GeoIP update..."
       if ((Get-Content $GeoIPLastModifiedPath) -ne $lastModifiedDate) {
           Write-Information "Found update, forcing download"
