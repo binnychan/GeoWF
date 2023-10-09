@@ -123,6 +123,7 @@ function GeoWF {
       Rename-Item -Path (Get-Item -Path (Join-Path $APP_DIR "GeoLite2-Country-CSV_*") | Sort-Object "Name" -Descending)[0] -NewName "GeoIP"
       Remove-Item $GeoIPZip -Force -Confirm:$false
       # write Last Modified Date to file for auto-download
+      Write-Information "Saving GeoIP time stamp..."
       $lastModifiedDate > $GeoIPLastModifiedPath      
     }
 
@@ -191,8 +192,6 @@ function GeoWF {
       $TargetRules | Select-Object Direction, DisplayName, DisplayGroup, Profile
       Set-NetFirewallRule -Name $TargetRules.Name -RemoteAddress $Networks
       # write the Last Country to file to skip the update process
-      Write-Information "Saving GeoIP time stamp..."
-      $lastModifiedDate > $GeoIPLastModifiedPath
       Write-Information "Saving country ID ..."
       $Country > $GeoIPLastCountryPath
     } else {
