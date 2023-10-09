@@ -1,4 +1,8 @@
 function GeoWF {
+
+    #For Debug
+    #Set-Variable -Name InformationPreference -Value "Continue"
+
     [cmdletbinding(DefaultParameterSetName=$false)]
     Param(
       [Parameter(ParameterSetName="Rule", Mandatory=$true)]
@@ -160,11 +164,13 @@ function GeoWF {
     Write-Information ("{0} IP ranges retrieved." -f $Networks.Count)
 
     if (!$ExcludeLocalSubnet) {
+      Write-Information "Adding 'LocalSubnet' networks..."
       $Networks += "LocalSubnet"
     }
 
     if (!$ExcludeExtraNetwork) {
       if (Test-Path $EXTRANETWORK_FILE) {
+        Write-Information "Adding 'ExtraNetwork' networks..."
         $Networks += ((Get-Content $EXTRANETWORK_FILE) -replace "\s", "") -split (",")
       }
     }
@@ -185,7 +191,10 @@ function GeoWF {
       $TargetRules | Select-Object Direction, DisplayName, DisplayGroup, Profile
       Set-NetFirewallRule -Name $TargetRules.Name -RemoteAddress $Networks
       # write the Last Country to file to skip the update process
+      Write-Information "Saving GeoIP time stamp..."
       $lastModifiedDate > $GeoIPLastModifiedPath
+      Write-Information "Saving country ID ..."
+      $Country > $GeoIPLastCountryPath
     } else {
       Write-Warning "No firewall rules matched criteria. No rules have been modified."
     }
